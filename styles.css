@@ -62,21 +62,20 @@ label.file-button {
 
 .brand {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 10px;
   min-height: 52px;
 }
 
-.brand-mark {
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
+.brand-logo {
+  width: min(190px, 100%);
+  height: auto;
+  display: block;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  background: #f8fbff;
-  color: var(--nav);
-  font-weight: 800;
+  background: #ffffff;
   border-radius: 8px;
+  padding: 8px;
 }
 
 .brand strong,
@@ -708,6 +707,13 @@ tbody tr.selected {
   border-radius: 8px;
   background: #ffffff;
   box-shadow: var(--shadow);
+}
+
+.scan-logo {
+  display: block;
+  width: min(220px, 58vw);
+  height: auto;
+  margin-bottom: 14px;
 }
 
 .scan-header h1 {

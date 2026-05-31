@@ -4,6 +4,8 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const dist = path.join(root, "dist");
 const files = ["index.html", "styles.css", "app.js", "README.md"];
+const assetDir = path.join(root, "assets");
+const distAssetDir = path.join(dist, "assets");
 
 fs.rmSync(dist, { recursive: true, force: true });
 fs.mkdirSync(dist, { recursive: true });
@@ -12,4 +14,8 @@ for (const file of files) {
   fs.copyFileSync(path.join(root, file), path.join(dist, file));
 }
 
-console.log(`Built ${files.length} files to ${path.relative(root, dist)}`);
+if (fs.existsSync(assetDir)) {
+  fs.cpSync(assetDir, distAssetDir, { recursive: true });
+}
+
+console.log(`Built ${files.length} files and assets to ${path.relative(root, dist)}`);
