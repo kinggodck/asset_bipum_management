@@ -1,0 +1,6 @@
+*.docx
+~$*
+ASSET_*.md
+asset_naming_qr_sticker_sop.html
+dist
+.DS_Store

@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>자산·비품 Naming Rule 및 QR 스티커 관리 절차서</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee8;
+      --soft: #f5f7fb;
+      --blue: #1f5f99;
+      --blue-soft: #eaf3fb;
+      --green-soft: #eaf7ef;
+      --gold-soft: #fff5d9;
+      --danger-soft: #fff0f0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #eef2f7;
+      line-height: 1.62;
+    }
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 36px 20px 64px;
+    }
+    .document {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, .08);
+      overflow: hidden;
+    }
+    header {
+      padding: 36px 42px 28px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #ffffff 0%, #f7fafc 100%);
+    }
+    .eyebrow {
+      color: var(--blue);
+      font-weight: 700;
+      font-size: 13px;
+      margin: 0 0 8px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.22;
+      letter-spacing: 0;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 12px 0 0;
+      font-size: 15px;
+    }
+    main {
+      padding: 30px 42px 46px;
+    }
+    h2 {
+      margin: 34px 0 12px;
+      padding-top: 2px;
+      font-size: 22px;
+      line-height: 1.32;
+      color: #0f2f4a;
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 17px;
+      color: #1f3d5a;
+    }
+    p { margin: 0 0 12px; }
+    ul {
+      margin: 8px 0 18px 22px;
+      padding: 0;
+    }
+    li { margin: 4px 0; }
+    .callout {
+      margin: 18px 0 22px;
+      padding: 16px 18px;
+      border: 1px solid #c9d9e8;
+      border-left: 5px solid var(--blue);
+      background: var(--blue-soft);
+      border-radius: 6px;
+    }
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #113f67;
+    }
+    .code-rule {
+      display: inline-block;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: #111827;
+      color: #f9fafb;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.5;
+      margin: 2px 0 8px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 22px;
+      table-layout: fixed;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 11px;
+      vertical-align: middle;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
+    }
+    th {
+      background: var(--soft);
+      text-align: center;
+      font-weight: 700;
+    }
+    td:first-child {
+      text-align: center;
+      font-weight: 650;
+      color: #1f3d5a;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, .75fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .sticker {
+      width: 100%;
+      max-width: 390px;
+      border: 2px solid #111827;
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+    .sticker-title {
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #111827;
+      padding-bottom: 7px;
+    }
+    .sticker-grid {
+      display: grid;
+      grid-template-columns: 1fr 96px;
+      gap: 12px;
+      align-items: center;
+    }
+    .asset-no {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 800;
+      font-size: 15px;
+      margin: 2px 0 8px;
+    }
+    .qr {
+      width: 96px;
+      height: 96px;
+      border: 1px solid #111827;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      background:
+        linear-gradient(90deg, #111 10px, transparent 10px) 0 0/24px 24px,
+        linear-gradient(#111 10px, transparent 10px) 0 0/24px 24px,
+        #fff;
+      color: #111;
+    }
+    .qr span {
+      background: white;
+      padding: 2px 4px;
+      border: 1px solid #111;
+    }
+    .print-note {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .check td:first-child {
+      font-size: 18px;
+      color: #111827;
+    }
+    footer {
+      padding: 18px 42px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      background: #fafafa;
+      font-size: 13px;
+    }
+    @media (max-width: 760px) {
+      header, main, footer { padding-left: 22px; padding-right: 22px; }
+      h1 { font-size: 24px; }
+      table { font-size: 13px; }
+      th, td { padding: 8px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      .page { max-width: none; padding: 0; }
+      .document { box-shadow: none; border: none; border-radius: 0; }
+      header { background: white; }
+      h2 { break-after: avoid; }
+      table, .callout, .sticker { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <article class="document">
+      <header>
+        <p class="eyebrow">자산관리 절차서</p>
+        <h1>자산·비품 Naming Rule 및 QR 스티커 관리 절차서</h1>
+        <p class="subtitle">공장 5개소, 사무실 5개소 기준 | 비품 등록, 자산코드 발급, QR 스티커 인쇄 의뢰 기준</p>
+      </header>
+      <main>
+        <section>
+          <h2>1. 목적</h2>
+          <p>본 절차서는 회사 자산과 사무실 비품을 빠르게 등록하고, 현장에서 QR 스티커를 스캔해 자산 정보, 반출, 반납, 수리 이력을 관리할 수 있도록 표준 Naming Rule과 스티커 제작 기준을 정의한다.</p>
+          <div class="callout">
+            <strong>핵심 운영 방향</strong>
+            일반 비품은 입력 항목을 최소화하고, QR 스티커를 통해 실물과 시스템 데이터를 연결한다. 고가 장비, IT 장비, 생산 장비는 시리얼, 구매일, 수리 이력까지 확장 관리한다.
+          </div>
+        </section>
+
+        <section>
+          <h2>2. 적용 범위</h2>
+          <ul>
+            <li>공장 5개소와 사무실 5개소에 배치된 모든 회사 자산과 비품</li>
+            <li>책상, 의자, 캐비닛, 프린터, 복합기, 모니터, 노트북 등 사무실 비품</li>
+            <li>생산 장비, 공구, 안전 장비, 협력업체 지급 장비</li>
+            <li>신규 구매품, 기존 보유품, 프로젝트 지급품, 수리 또는 교체 대상품</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>3. Naming Rule 기본 원칙</h2>
+          <p>자산번호는 사람이 읽을 수 있으면서도 시스템에서 중복 없이 관리할 수 있어야 한다.</p>
+          <div class="code-rule">[자산구분]-[사업장]-[상세위치]-[품목]-[연도]-[순번]</div>
+          <p>예: <strong>OF-OS01-ADM-DESK-26-001</strong> / <strong>IT-OS03-ADM-NOTEBOOK-26-004</strong> / <strong>EQ-FA02-SHOPA-WELDER-26-012</strong></p>
+          <table>
+            <thead><tr><th>항목</th><th>예시</th><th>설명</th></tr></thead>
+            <tbody><tr><td>자산구분</td><td>OF, IT, EQ, TL, SF</td><td>사무비품, IT장비, 생산장비, 공구, 안전장비</td></tr>
+<tr><td>사업장</td><td>FA01~FA05, OS01~OS05</td><td>공장 5개소, 사무실 5개소</td></tr>
+<tr><td>상세위치</td><td>ADM, MT01, WH, SHOPA</td><td>관리팀, 회의실1, 창고, Shop A 등</td></tr>
+<tr><td>품목</td><td>DESK, CHAIR, PRINTER</td><td>품목 코드표 기준</td></tr>
+<tr><td>연도</td><td>26</td><td>등록연도 또는 취득연도의 뒤 2자리</td></tr>
+<tr><td>순번</td><td>001</td><td>동일 조건 내 3자리 순번</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>4. 사업장 코드</h2>
+          <table>
+            <thead><tr><th>코드</th><th>기본명</th><th>실제 명칭</th></tr></thead>
+            <tbody><tr><td>FA01</td><td>공장 1</td><td>실제 공장명 기입</td></tr>
+<tr><td>FA02</td><td>공장 2</td><td>실제 공장명 기입</td></tr>
+<tr><td>FA03</td><td>공장 3</td><td>실제 공장명 기입</td></tr>
+<tr><td>FA04</td><td>공장 4</td><td>실제 공장명 기입</td></tr>
+<tr><td>FA05</td><td>공장 5</td><td>실제 공장명 기입</td></tr>
+<tr><td>OS01</td><td>사무실 1</td><td>본사 또는 실제 사무실명 기입</td></tr>
+<tr><td>OS02</td><td>사무실 2</td><td>실제 사무실명 기입</td></tr>
+<tr><td>OS03</td><td>사무실 3</td><td>실제 사무실명 기입</td></tr>
+<tr><td>OS04</td><td>사무실 4</td><td>실제 사무실명 기입</td></tr>
+<tr><td>OS05</td><td>사무실 5</td><td>실제 사무실명 기입</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>5. 자산구분 및 품목 코드</h2>
+          <table>
+            <thead><tr><th>코드</th><th>영문</th><th>구분</th><th>예시</th></tr></thead>
+            <tbody><tr><td>OF</td><td>Office Fixture</td><td>사무비품</td><td>책상, 의자, 캐비닛, 회의테이블</td></tr>
+<tr><td>IT</td><td>IT Equipment</td><td>IT장비</td><td>노트북, PC, 모니터, 프린터</td></tr>
+<tr><td>EQ</td><td>Equipment</td><td>생산장비</td><td>용접기, 절단기, 측정기</td></tr>
+<tr><td>TL</td><td>Tool</td><td>공구</td><td>드릴, 렌치, 지그, 치공구</td></tr>
+<tr><td>SF</td><td>Safety</td><td>안전장비</td><td>가스측정기, 안전벨트, 보호구</td></tr></tbody>
+          </table>
+          <table>
+            <thead><tr><th>품목 코드</th><th>품명</th><th>품목 코드</th><th>품명</th></tr></thead>
+            <tbody><tr><td>DESK</td><td>책상</td><td>CHAIR</td><td>의자</td></tr>
+<tr><td>CAB</td><td>캐비닛</td><td>MTABLE</td><td>회의테이블</td></tr>
+<tr><td>PRINTER</td><td>프린터</td><td>MFP</td><td>복합기</td></tr>
+<tr><td>MON</td><td>모니터</td><td>NOTEBOOK</td><td>노트북</td></tr>
+<tr><td>PC</td><td>데스크탑</td><td>PHONE</td><td>전화기</td></tr>
+<tr><td>AIR</td><td>공기청정기</td><td>FRIDGE</td><td>냉장고</td></tr>
+<tr><td>WELDER</td><td>용접기</td><td>CUTTER</td><td>절단기</td></tr>
+<tr><td>GAUGE</td><td>측정기</td><td>GASDETECT</td><td>가스측정기</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>6. 자산·비품 등록 절차</h2>
+          <table>
+            <thead><tr><th>단계</th><th>업무</th><th>담당</th><th>처리 기준</th></tr></thead>
+            <tbody><tr><td>1</td><td>실물 확인</td><td>자산 담당자</td><td>품명, 수량, 위치, 상태, 기존 시리얼 번호를 확인한다.</td></tr>
+<tr><td>2</td><td>코드 부여</td><td>자산 담당자</td><td>Naming Rule에 따라 자산번호를 생성하고 중복 여부를 확인한다.</td></tr>
+<tr><td>3</td><td>필수 정보 입력</td><td>자산 담당자</td><td>자산번호, 품명, 구분, 사업장, 상세위치, 관리부서, 상태를 입력한다.</td></tr>
+<tr><td>4</td><td>QR 값 생성</td><td>시스템/담당자</td><td>자산번호 또는 자산 상세 URL을 QR 값으로 생성한다.</td></tr>
+<tr><td>5</td><td>스티커 인쇄 요청</td><td>자산 담당자</td><td>인쇄업자에게 CSV와 스티커 규격서를 전달한다.</td></tr>
+<tr><td>6</td><td>스티커 부착</td><td>현장 담당자</td><td>스캔이 쉬운 평평한 위치에 부착하고 사진을 등록한다.</td></tr>
+<tr><td>7</td><td>스캔 검증</td><td>자산 담당자</td><td>QR 스캔 시 올바른 자산 상세 화면이 열리는지 확인한다.</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>7. 등록 입력 항목 기준</h2>
+          <p>입력 부담을 줄이기 위해 모든 비품에 많은 정보를 요구하지 않는다. 일반 비품은 필수 항목 중심으로 등록하고, 고가 장비와 IT 장비만 추가 정보를 입력한다.</p>
+          <table>
+            <thead><tr><th>구분</th><th>항목</th><th>입력 기준</th></tr></thead>
+            <tbody><tr><td>필수</td><td>자산번호</td><td>자동 생성 또는 담당자 확정</td></tr>
+<tr><td>필수</td><td>품명</td><td>현장에서 부르는 명칭</td></tr>
+<tr><td>필수</td><td>자산구분</td><td>OF, IT, EQ, TL, SF</td></tr>
+<tr><td>필수</td><td>사업장</td><td>FA01~FA05, OS01~OS05</td></tr>
+<tr><td>필수</td><td>상세위치</td><td>부서, 회의실, 창고, Shop 등</td></tr>
+<tr><td>필수</td><td>관리부서</td><td>총무팀, 생산관리팀, IT팀 등</td></tr>
+<tr><td>필수</td><td>상태</td><td>사용 가능, 사용 중, 수리 중, 폐기 예정</td></tr>
+<tr><td>선택</td><td>제조사/모델/시리얼</td><td>IT 장비와 고가 장비는 입력 권장</td></tr>
+<tr><td>선택</td><td>구매일/구매금액</td><td>감가상각, 교체 판단이 필요한 자산</td></tr>
+<tr><td>선택</td><td>사진</td><td>고가 장비, 협력업체 지급품, 파손 위험 자산</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>8. QR 스티커 운영 기준</h2>
+          <table>
+            <thead><tr><th>항목</th><th>기준</th></tr></thead>
+            <tbody><tr><td>QR 값</td><td>자산 상세 페이지 URL을 권장한다. 예: https://asset.company.com/assets/OF-OS01-ADM-DESK-26-001</td></tr>
+<tr><td>시스템 미구축 시</td><td>우선 자산번호만 QR에 넣고, 추후 시스템에서 자산번호를 URL과 매핑한다.</td></tr>
+<tr><td>표기 정보</td><td>회사명, 자산번호, 품명, 위치, 관리부서, QR 코드를 포함한다.</td></tr>
+<tr><td>부착 위치</td><td>눈에 잘 보이고 스캔이 쉬운 평평한 면에 붙인다. 제품 시리얼, 통풍구, 조작부는 가리지 않는다.</td></tr>
+<tr><td>스캔 확인</td><td>부착 후 휴대폰으로 스캔하여 자산번호와 실물이 일치하는지 확인한다.</td></tr>
+<tr><td>재발행</td><td>훼손, 위치 변경, 자산번호 변경 시 기존 스티커를 제거하고 재발행한다.</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>9. 스티커 권장 레이아웃</h2>
+          <div class="two-col">
+            <div>
+              <p>스티커에는 너무 많은 정보를 넣지 않고, 사람이 읽을 수 있는 자산번호와 QR 스캔 정보를 함께 배치한다.</p>
+              <table>
+                <thead><tr><th>위치</th><th>표기 내용</th></tr></thead>
+                <tbody><tr><td>상단</td><td>회사 자산관리</td></tr>
+<tr><td>중앙</td><td>자산번호: OF-OS01-ADM-DESK-26-001</td></tr>
+<tr><td>중앙</td><td>품명: 사무용 책상</td></tr>
+<tr><td>중앙</td><td>위치: OS01 / ADM</td></tr>
+<tr><td>하단</td><td>관리부서: 총무팀</td></tr>
+<tr><td>우측 또는 하단</td><td>QR 코드</td></tr></tbody>
+              </table>
+            </div>
+            <div class="sticker">
+              <div class="sticker-title">회사 자산관리</div>
+              <div class="sticker-grid">
+                <div>
+                  <div>자산번호</div>
+                  <div class="asset-no">OF-OS01-ADM-DESK-26-001</div>
+                  <div>품명: 사무용 책상</div>
+                  <div>위치: OS01 / ADM</div>
+                  <div>관리부서: 총무팀</div>
+                </div>
+                <div class="qr"><span>QR</span></div>
+              </div>
+              <div class="print-note">인쇄 시 실제 QR은 자산 상세 URL 또는 자산번호로 생성</div>
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>10. 인쇄업자 의뢰 제안</h2>
+          <p>인쇄업자에게는 디자인만 맡기는 것이 아니라, QR 코드 생성, 가변 데이터 인쇄, 샘플 검수, 납품 데이터까지 함께 요청하는 것이 좋다.</p>
+          <table>
+            <thead><tr><th>항목</th><th>요청 내용</th></tr></thead>
+            <tbody><tr><td>의뢰 방식</td><td>자산별 CSV 데이터를 제공하고, 업체가 각 행별 QR 코드와 자산번호를 가변 인쇄한다.</td></tr>
+<tr><td>필수 산출물</td><td>스티커 실물, 인쇄용 PDF 교정본, QR 코드 데이터 매핑표, 샘플 스티커</td></tr>
+<tr><td>QR 규격</td><td>QR Code Model 2, 오류복원 Q 또는 H, QR 최소 18mm 이상, 충분한 여백 확보</td></tr>
+<tr><td>해상도</td><td>인쇄 데이터 300dpi 이상, 가능하면 벡터 PDF 또는 SVG 기반 권장</td></tr>
+<tr><td>검수</td><td>샘플 20장 선제작 후 휴대폰 2종 이상으로 스캔 테스트</td></tr>
+<tr><td>납품</td><td>사업장별, 위치별, 자산번호 순서로 묶음 포장</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>11. 스티커 재질 및 크기 권장</h2>
+          <table>
+            <thead><tr><th>대상</th><th>권장 크기</th><th>권장 재질</th><th>적용 예시</th></tr></thead>
+            <tbody><tr><td>사무실 일반 비품</td><td>60 x 35mm</td><td>무광 PET 또는 라미네이팅 라벨</td><td>책상, 의자, 캐비닛, 회의테이블</td></tr>
+<tr><td>IT 장비</td><td>50 x 30mm</td><td>무광 PET, 잔여 접착 흔적이 적은 소재</td><td>노트북, 모니터, 프린터</td></tr>
+<tr><td>공장 장비</td><td>80 x 50mm</td><td>강접착 PET 또는 폴리에스터, 방수·방유·스크래치 방지</td><td>용접기, 절단기, 측정기</td></tr>
+<tr><td>소형 공구</td><td>40 x 25mm 또는 케이블 타이형</td><td>강접착 소형 라벨 또는 태그형 라벨</td><td>드릴, 렌치, 소형 계측기</td></tr>
+<tr><td>실외/야드</td><td>80 x 50mm 이상</td><td>내후성, 방수, UV 저항 소재</td><td>야외 보관 장비</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>12. 인쇄업자 전달용 CSV 항목</h2>
+          <table>
+            <thead><tr><th>컬럼명</th><th>예시</th><th>설명</th></tr></thead>
+            <tbody><tr><td>asset_no</td><td>OF-OS01-ADM-DESK-26-001</td><td>자산번호</td></tr>
+<tr><td>asset_name</td><td>사무용 책상</td><td>품명</td></tr>
+<tr><td>site_code</td><td>OS01</td><td>사업장 코드</td></tr>
+<tr><td>location_code</td><td>ADM</td><td>상세 위치</td></tr>
+<tr><td>department</td><td>총무팀</td><td>관리부서</td></tr>
+<tr><td>qr_value</td><td>https://asset.company.com/assets/OF-OS01-ADM-DESK-26-001</td><td>QR에 들어갈 값</td></tr>
+<tr><td>label_size</td><td>60x35</td><td>스티커 크기</td></tr>
+<tr><td>quantity</td><td>1</td><td>인쇄 수량</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>13. 인쇄 검수 체크리스트</h2>
+          <table class="check">
+            <thead><tr><th>체크</th><th>검수 항목</th></tr></thead>
+            <tbody><tr><td>□</td><td>자산번호가 CSV와 동일하게 인쇄되었는가</td></tr>
+<tr><td>□</td><td>QR을 스캔하면 올바른 자산번호 또는 자산 상세 페이지가 열리는가</td></tr>
+<tr><td>□</td><td>QR 주변 여백이 충분하고 스캔이 빠르게 되는가</td></tr>
+<tr><td>□</td><td>자산번호와 QR 값이 서로 다른 항목으로 섞이지 않았는가</td></tr>
+<tr><td>□</td><td>스티커 재질이 사무실, 공장, 실외 사용 조건에 맞는가</td></tr>
+<tr><td>□</td><td>곡면, 금속면, 플라스틱면에 부착 테스트를 했는가</td></tr>
+<tr><td>□</td><td>사업장별, 위치별로 분류 포장되어 납품되는가</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>14. 운영 책임</h2>
+          <table>
+            <thead><tr><th>역할</th><th>책임</th></tr></thead>
+            <tbody><tr><td>자산 담당자</td><td>Naming Rule 관리, 자산번호 발급, 인쇄 의뢰, 검수, 재발행 관리</td></tr>
+<tr><td>현장/사무실 담당자</td><td>실물 확인, 스티커 부착, 위치 변경 신고, 훼손 신고</td></tr>
+<tr><td>생산관리팀</td><td>프로젝트 지급 장비의 반출, 반납, 미반납 확인</td></tr>
+<tr><td>협력업체 담당자</td><td>지급받은 장비의 사용, 보관, 반납, 파손 신고</td></tr>
+<tr><td>IT/시스템 담당자</td><td>QR URL, 자산 상세 화면, 권한, 데이터 백업 관리</td></tr></tbody>
+          </table>
+        </section>
+
+        <section>
+          <h2>15. 최종 권장 운영 방식</h2>
+          <ul>
+            <li>일반 사무실 비품은 필수 항목만 입력하고 QR 스티커로 실물 식별을 우선한다.</li>
+            <li>IT 장비, 생산 장비, 안전 장비는 시리얼, 구매일, 수리 이력까지 관리한다.</li>
+            <li>QR 값은 장기적으로 자산 상세 페이지 URL을 사용한다.</li>
+            <li>인쇄업자는 가변 QR 인쇄 경험이 있는 업체를 선정하고 샘플 검수 후 대량 제작한다.</li>
+            <li>부착 후 반드시 스캔 검증을 완료해야 자산 등록 완료로 본다.</li>
+          </ul>
+        </section>
+      </main>
+      <footer>
+        자산관리 폴더 기준 문서: /Users/ai-study-claude/Asset_Management
+      </footer>
+    </article>
+  </div>
+</body>
+</html>

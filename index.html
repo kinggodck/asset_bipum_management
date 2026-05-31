@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>(주)영광 비품 QR 관리</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="주요 메뉴">
+        <div class="brand">
+          <span class="brand-mark">59A</span>
+          <div>
+            <strong>(주)영광</strong>
+            <span>비품 QR 관리</span>
+          </div>
+        </div>
+        <nav class="nav-list">
+          <a class="active" href="#dashboard">대시보드</a>
+          <a href="#assets">비품 목록</a>
+          <a href="#labels">QR 스티커</a>
+        </nav>
+        <div class="sync-panel">
+          <label for="sheetUrl">Google Sheet URL</label>
+          <textarea id="sheetUrl" rows="4" spellcheck="false"></textarea>
+          <button id="syncBtn" class="primary-button" type="button">↻ 시트 동기화</button>
+          <label class="file-button" for="csvInput">CSV 가져오기</label>
+          <input id="csvInput" type="file" accept=".csv,text/csv" />
+          <p id="syncStatus" class="sync-status" role="status"></p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Asset Management</p>
+            <h1>비품 QR 관리</h1>
+          </div>
+          <div class="top-actions">
+            <button id="exportBtn" class="ghost-button" type="button">↓ CSV</button>
+            <button id="labelCsvBtn" class="ghost-button" type="button">스티커 CSV</button>
+            <button id="printBtn" class="ghost-button" type="button">인쇄</button>
+            <button id="addAssetBtn" class="primary-button" type="button">＋ 등록</button>
+          </div>
+        </header>
+
+        <section id="dashboard" class="metric-grid" aria-label="핵심 지표">
+          <article class="metric">
+            <span>전체 비품</span>
+            <strong id="totalCount">0</strong>
+            <small id="categoryCount">0개 분류</small>
+          </article>
+          <article class="metric">
+            <span>사용 중</span>
+            <strong id="inUseCount">0</strong>
+            <small>지급 또는 배치된 비품</small>
+          </article>
+          <article class="metric">
+            <span>수리 중</span>
+            <strong id="repairCount">0</strong>
+            <small>점검 필요 우선 확인</small>
+          </article>
+          <article class="metric">
+            <span>구매 금액</span>
+            <strong id="amountTotal">₩0</strong>
+            <small>금액 입력 건 기준</small>
+          </article>
+        </section>
+
+        <section class="rule-builder" aria-label="비품 번호 생성">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Naming Rule</p>
+              <h2>비품 번호 생성</h2>
+            </div>
+            <output id="generatedAssetNo">ADM-DESK-2605-001</output>
+          </div>
+          <div class="rule-grid">
+            <label>구분<select id="ruleCategory"></select></label>
+            <label>품목<select id="ruleItem"></select></label>
+            <label>도입연월<input id="ruleIntroducedYm" value="2605" inputmode="numeric" maxlength="4" /></label>
+            <label>순번<input id="ruleSeq" value="001" inputmode="numeric" maxlength="3" /></label>
+            <button id="copyAssetNoBtn" class="ghost-button" type="button">복사</button>
+            <button id="useAssetNoBtn" class="primary-button" type="button">등록에 사용</button>
+          </div>
+          <p class="rule-note">사업장, 위치, 사용부서는 자산번호와 스티커 번호에 넣지 않고 시스템 상태 값으로만 관리합니다.</p>
+        </section>
+
+        <section class="policy-grid" aria-label="운영 기준">
+          <article>
+            <strong>고유 식별자</strong>
+            <span>자산번호는 최초 부여 후 폐기 시까지 변경하지 않습니다.</span>
+          </article>
+          <article>
+            <strong>상태 변경</strong>
+            <span>이동, 대여, 반납은 QR 스캔 후 위치/사용자 상태만 갱신합니다.</span>
+          </article>
+          <article>
+            <strong>정기 실사</strong>
+            <span>연 1회 또는 반기 1회 모바일 QR Check-in으로 확인합니다.</span>
+          </article>
+          <article>
+            <strong>보안 QR</strong>
+            <span>단축 URL과 사내 SSO 접근 통제를 전제로 운영합니다.</span>
+          </article>
+        </section>
+
+        <section class="workspace">
+          <div class="asset-area" id="assets">
+            <div class="filter-bar">
+              <label class="search-box">
+                <span>검색</span>
+                <input id="searchInput" type="search" placeholder="비품번호, 품명, 모델, 시리얼" />
+              </label>
+              <label>
+                <span>상태</span>
+                <select id="statusFilter"></select>
+              </label>
+              <label>
+                <span>관리부서</span>
+                <select id="departmentFilter"></select>
+              </label>
+              <label>
+                <span>구분</span>
+                <select id="categoryFilter"></select>
+              </label>
+            </div>
+
+            <div class="status-board" id="statusBoard" aria-label="상태별 비품 수"></div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>비품번호</th>
+                    <th>품명</th>
+                    <th>부서</th>
+                    <th>사용자</th>
+                    <th>상태</th>
+                    <th>위치</th>
+                    <th>모델</th>
+                    <th>구매일</th>
+                    <th>금액</th>
+                  </tr>
+                </thead>
+                <tbody id="assetTable"></tbody>
+              </table>
+              <p id="emptyState" class="empty-state">조건에 맞는 비품이 없습니다.</p>
+            </div>
+          </div>
+
+          <aside class="detail-panel" aria-label="비품 상세">
+            <div id="detailEmpty" class="detail-empty">목록에서 비품을 선택하세요.</div>
+            <div id="detailContent" class="detail-content hidden">
+              <div class="detail-heading">
+                <span id="detailStatus" class="status-badge"></span>
+                <h2 id="detailName"></h2>
+                <p id="detailAssetNo"></p>
+              </div>
+              <figure id="assetPhotoFigure" class="asset-photo hidden">
+                <img id="assetPhotoImage" alt="등록된 비품 사진" />
+                <figcaption>등록 사진</figcaption>
+              </figure>
+              <div class="photo-actions">
+                <button id="changePhotoBtn" class="ghost-button" type="button">사진 등록</button>
+                <button id="removePhotoBtn" class="ghost-button hidden" type="button">사진 삭제</button>
+                <input id="detailPhotoInput" type="file" accept="image/*" />
+              </div>
+              <section class="usage-card" aria-label="사용자 추적">
+                <div class="usage-heading">
+                  <h3>사용자 추적</h3>
+                  <span id="usageSummary">현재 사용자 없음</span>
+                </div>
+                <div class="usage-form">
+                  <label>사용자<input id="usageUser" autocomplete="off" /></label>
+                  <label>소속<input id="usageOrg" autocomplete="off" /></label>
+                  <label>사용 목적<input id="usagePurpose" autocomplete="off" /></label>
+                  <label>반납 예정일<input id="usageDueDate" type="date" /></label>
+                  <button id="startUsageBtn" class="primary-button" type="button">사용 시작</button>
+                  <button id="returnUsageBtn" class="ghost-button" type="button">반납 처리</button>
+                </div>
+                <ol id="usageHistory" class="usage-history"></ol>
+              </section>
+              <dl class="detail-list" id="detailList"></dl>
+              <div class="detail-actions">
+                <button data-next-status="사용 가능" class="ghost-button status-action" type="button">사용 가능</button>
+                <button data-next-status="사용 중" class="ghost-button status-action" type="button">사용 중</button>
+                <button data-next-status="수리 중" class="ghost-button status-action" type="button">수리 중</button>
+                <button data-next-status="폐기" class="ghost-button status-action" type="button">폐기</button>
+                <button id="inspectBtn" class="ghost-button" type="button">실사 완료</button>
+              </div>
+              <div class="qr-preview">
+                <img id="qrImage" alt="QR 코드" />
+                <div>
+            <strong>비품 QR 스티커</strong>
+                  <a id="qrLink" href="#" target="_blank" rel="noreferrer">보안 단축 URL 열기</a>
+                  <button id="labelBtn" class="primary-button" type="button">스티커 인쇄</button>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section id="labels" class="label-sheet" aria-label="스티커 미리보기">
+          <div class="section-heading">
+          <h2>비품 스티커 인쇄 미리보기</h2>
+            <button id="printLabelsBtn" class="ghost-button" type="button">인쇄</button>
+          </div>
+          <div id="labelGrid" class="label-grid"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="assetDialog">
+      <form method="dialog" id="assetForm">
+        <div class="modal-heading">
+          <h2>비품 등록</h2>
+          <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="닫기">×</button>
+        </div>
+        <div class="form-grid">
+          <label>비품번호<input name="자산번호(최종)" required /></label>
+          <label>자산구분코드<input name="자산구분코드" required /></label>
+          <label>사업장코드<input name="사업장코드" /></label>
+          <label>상세위치코드<input name="상세위치코드" /></label>
+          <label>품목코드<input name="품목코드" /></label>
+          <label>도입연월<input name="도입연월" inputmode="numeric" maxlength="4" placeholder="2605" /></label>
+          <label>품명<input name="품명(실제명칭)" required /></label>
+          <label>관리부서<input name="관리부서" /></label>
+          <label>상태<select name="상태"><option>사용 가능</option><option>사용 중</option><option>수리 중</option><option>반납</option><option>폐기 예정</option><option>폐기</option></select></label>
+          <label>제조사<input name="제조사" /></label>
+          <label>모델명<input name="모델명" /></label>
+          <label>시리얼번호<input name="시리얼번호" /></label>
+          <label>구매일<input name="구매일" type="date" /></label>
+          <label>구매금액<input name="구매금액" inputmode="numeric" placeholder="1500000" /></label>
+          <label>스티커재질<input name="스티커재질" placeholder="VOID 라벨" /></label>
+          <label>비고<input name="비고" /></label>
+          <label class="photo-field">사진<input id="assetPhotoInput" name="assetPhoto" type="file" accept="image/*" /></label>
+        </div>
+        <menu class="modal-actions">
+          <button value="cancel" class="ghost-button" type="submit" formnovalidate>취소</button>
+          <button id="saveAssetBtn" value="default" class="primary-button" type="submit">저장</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
