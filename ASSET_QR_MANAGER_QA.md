@@ -166,10 +166,10 @@ https://cmp.ny/A001
 현재 방식:
 
 ```text
-https://asset-bipum-management.vercel.app/?asset=ADM-DESK-2605-001#assets
+https://asset-bipum-management.vercel.app/?asset=ADM-DESK-2605-001
 ```
 
-따라서 새로 출력한 QR 스티커는 휴대폰 카메라로 스캔하면 앱이 열리고 해당 비품이 자동 선택됩니다.
+따라서 새로 출력한 QR 스티커는 휴대폰 카메라로 스캔하면 관리 대시보드가 아니라 해당 비품의 읽기 전용 정보 화면이 열립니다.
 
 단, 이미 출력된 예전 `cmp.ny` QR 스티커는 다시 인쇄해야 합니다.
 
@@ -187,7 +187,7 @@ https://asset.company.com/assets/ADM-DESK-2605-001
 ?asset=ADM-DESK-2605-001
 ```
 
-QR 스캔으로 앱이 열리면 해당 비품이 목록에서 자동 선택되고 상세 화면과 QR 스티커 화면에서 바로 확인할 수 있습니다.
+QR 스캔으로 앱이 열리면 대시보드, 등록, CSV, 스티커 인쇄 같은 관리 기능은 숨겨지고 해당 비품의 사진, 상태, 위치, 사용자, 모델, 시리얼 등 확인 정보만 표시됩니다.
 
 ## 13. Vercel 배포는 가능한가요?
 

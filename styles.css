@@ -701,6 +701,89 @@ tbody tr.selected {
   overflow-wrap: anywhere;
 }
 
+.scan-header {
+  display: none;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: var(--shadow);
+}
+
+.scan-header h1 {
+  font-size: 30px;
+}
+
+.scan-header p:last-child {
+  margin-bottom: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+body.scan-mode {
+  background: #eef3f8;
+}
+
+body.scan-mode .app-shell {
+  display: block;
+  min-height: 100vh;
+}
+
+body.scan-mode .sidebar,
+body.scan-mode .topbar,
+body.scan-mode #dashboard,
+body.scan-mode .rule-builder,
+body.scan-mode .policy-grid,
+body.scan-mode .asset-area,
+body.scan-mode #labels,
+body.scan-mode .photo-actions,
+body.scan-mode .usage-form,
+body.scan-mode .detail-actions,
+body.scan-mode .qr-preview {
+  display: none;
+}
+
+body.scan-mode .main-content {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+body.scan-mode .scan-header {
+  display: block;
+}
+
+body.scan-mode .workspace {
+  display: block;
+}
+
+body.scan-mode .detail-panel {
+  position: static;
+  min-height: 0;
+  padding: 18px;
+}
+
+body.scan-mode .detail-empty {
+  min-height: 220px;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+body.scan-mode .asset-photo img {
+  max-height: 340px;
+  object-fit: contain;
+}
+
+body.scan-mode .usage-card {
+  background: #ffffff;
+}
+
+body.scan-mode .detail-list {
+  grid-template-columns: 110px minmax(0, 1fr);
+}
+
 .label-sheet {
   padding: 18px;
 }

@@ -59,7 +59,7 @@ const DEFAULT_ROWS = [
     "구매일": "-",
     "구매금액": "-",
     "사진링크": "-",
-    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=ADM-DESK-2605-001#assets",
+    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=ADM-DESK-2605-001",
     "스티커크기": "60x35",
     "스티커재질": "무광 PET",
     "인쇄수량": "1",
@@ -91,7 +91,7 @@ const DEFAULT_ROWS = [
     "구매일": "2026-01-01",
     "구매금액": "₩1,500,000",
     "사진링크": "-",
-    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=IT-NOTEBOOK-2601-004#assets",
+    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=IT-NOTEBOOK-2601-004",
     "스티커크기": "50x30",
     "스티커재질": "VOID 라벨",
     "인쇄수량": "1",
@@ -123,7 +123,7 @@ const DEFAULT_ROWS = [
     "구매일": "2025-05-20",
     "구매금액": "₩3,500,000",
     "사진링크": "-",
-    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=EQ-WELDER-2505-012#assets",
+    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=EQ-WELDER-2505-012",
     "스티커크기": "80x50",
     "스티커재질": "파괴 라벨",
     "인쇄수량": "1",
@@ -237,6 +237,8 @@ const els = {
   printLabelsBtn: document.querySelector("#printLabelsBtn"),
   labelBtn: document.querySelector("#labelBtn"),
   inspectBtn: document.querySelector("#inspectBtn"),
+  scanHeader: document.querySelector("#scanHeader"),
+  scanNotice: document.querySelector("#scanNotice"),
   addAssetBtn: document.querySelector("#addAssetBtn"),
   assetDialog: document.querySelector("#assetDialog"),
   assetForm: document.querySelector("#assetForm"),
@@ -259,6 +261,8 @@ const state = {
     department: "전체",
     category: "전체",
   },
+  scanMode: false,
+  requestedAssetNo: "",
 };
 
 els.sheetUrl.value = DEFAULT_SHEET_URL;
@@ -297,7 +301,7 @@ function normalizeRow(row) {
   if (!normalized["사용이력"]) normalized["사용이력"] = "[]";
   if (
     normalized["자산번호(최종)"] &&
-    (!normalized["QR코드URL"] || isLegacyQrUrl(normalized["QR코드URL"]))
+    (!normalized["QR코드URL"] || isLegacyQrUrl(normalized["QR코드URL"]) || isManagedAppQrUrl(normalized["QR코드URL"]))
   ) {
     normalized["QR코드URL"] = assetQrUrl(normalized["자산번호(최종)"]);
   }
@@ -449,6 +453,9 @@ function renderTable(rows) {
 
 function renderDetail() {
   const row = selectedRow();
+  els.detailEmpty.textContent = state.scanMode
+    ? `${state.requestedAssetNo || "요청한 비품"} 정보를 현재 데이터에서 찾지 못했습니다.`
+    : "목록에서 비품을 선택하세요.";
   els.detailEmpty.classList.toggle("hidden", Boolean(row));
   els.detailContent.classList.toggle("hidden", !row);
   if (!row) return;
@@ -570,13 +577,22 @@ function renderLabels(rows) {
 }
 
 function render() {
-  const rows = filteredRows();
-  if (rows.length && !rows.some((row) => row["자산번호(최종)"] === state.selectedAssetNo)) {
-    state.selectedAssetNo = rows[0]["자산번호(최종)"];
+  const rows = state.scanMode
+    ? state.rows.filter((row) => row["자산번호(최종)"] === state.requestedAssetNo)
+    : filteredRows();
+
+  if (state.scanMode) {
+    state.selectedAssetNo = rows[0]?.["자산번호(최종)"] || "";
+  } else {
+    if (rows.length && !rows.some((row) => row["자산번호(최종)"] === state.selectedAssetNo)) {
+      state.selectedAssetNo = rows[0]["자산번호(최종)"];
+    }
+    if (!rows.length) {
+      state.selectedAssetNo = "";
+    }
   }
-  if (!rows.length) {
-    state.selectedAssetNo = "";
-  }
+
+  applyScanMode(rows.length > 0);
   renderFilters();
   renderMetrics(rows);
   renderTable(rows);
@@ -719,14 +735,13 @@ function defaultLabelMaterial(categoryCode) {
 
 function qrValueForRow(row) {
   const existing = normalizeCell(row["QR코드URL"]);
-  if (existing && !isLegacyQrUrl(existing)) return existing;
+  if (existing && !isLegacyQrUrl(existing) && !isManagedAppQrUrl(existing)) return existing;
   return assetQrUrl(row["자산번호(최종)"]);
 }
 
 function assetQrUrl(assetNo) {
   const url = new URL(appBaseUrl());
   url.searchParams.set("asset", assetNo);
-  url.hash = "assets";
   return url.toString();
 }
 
@@ -739,6 +754,15 @@ function appBaseUrl() {
 
 function isLegacyQrUrl(value) {
   return /^https?:\/\/cmp\.ny\//i.test(normalizeCell(value));
+}
+
+function isManagedAppQrUrl(value) {
+  try {
+    const url = new URL(normalizeCell(value));
+    return url.hostname === "asset-bipum-management.vercel.app" && url.searchParams.has("asset");
+  } catch (error) {
+    return false;
+  }
 }
 
 function csvEscape(value) {
@@ -1001,6 +1025,8 @@ function selectAssetFromUrl() {
   const assetNo = normalizeCell(params.get("asset"));
   if (!assetNo) return;
 
+  state.scanMode = true;
+  state.requestedAssetNo = assetNo;
   const exists = state.rows.some((row) => row["자산번호(최종)"] === assetNo);
   if (exists) {
     state.selectedAssetNo = assetNo;
@@ -1011,9 +1037,17 @@ function selectAssetFromUrl() {
     return;
   }
 
-  window.setTimeout(() => {
-    els.syncStatus.textContent = `${assetNo} 비품을 현재 데이터에서 찾지 못했습니다. Google Sheet 또는 CSV 데이터를 확인해 주세요.`;
-  }, 0);
+  state.selectedAssetNo = "";
+}
+
+function applyScanMode(hasAsset) {
+  document.body.classList.toggle("scan-mode", state.scanMode);
+  els.scanHeader.classList.toggle("hidden", !state.scanMode);
+  if (!state.scanMode) return;
+
+  els.scanNotice.textContent = hasAsset
+    ? "QR 스캔으로 연결된 비품의 현재 등록 정보를 표시합니다."
+    : `${state.requestedAssetNo} 비품을 현재 데이터에서 찾지 못했습니다.`;
 }
 
 els.searchInput.addEventListener("input", (event) => {
