@@ -1,5 +1,6 @@
 const DEFAULT_SHEET_URL =
   "https://docs.google.com/spreadsheets/d/1uTCNswbRn9W5KJUktoJMVyYsxnsyfdiDsUmRxJvMFmc/edit?gid=0#gid=0";
+const PUBLIC_APP_URL = "https://asset-bipum-management.vercel.app/";
 
 const HEADERS = [
   "자산번호(최종)",
@@ -58,7 +59,7 @@ const DEFAULT_ROWS = [
     "구매일": "-",
     "구매금액": "-",
     "사진링크": "-",
-    "QR코드URL": "https://cmp.ny/A001",
+    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=ADM-DESK-2605-001#assets",
     "스티커크기": "60x35",
     "스티커재질": "무광 PET",
     "인쇄수량": "1",
@@ -90,7 +91,7 @@ const DEFAULT_ROWS = [
     "구매일": "2026-01-01",
     "구매금액": "₩1,500,000",
     "사진링크": "-",
-    "QR코드URL": "https://cmp.ny/A004",
+    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=IT-NOTEBOOK-2601-004#assets",
     "스티커크기": "50x30",
     "스티커재질": "VOID 라벨",
     "인쇄수량": "1",
@@ -122,7 +123,7 @@ const DEFAULT_ROWS = [
     "구매일": "2025-05-20",
     "구매금액": "₩3,500,000",
     "사진링크": "-",
-    "QR코드URL": "https://cmp.ny/A012",
+    "QR코드URL": "https://asset-bipum-management.vercel.app/?asset=EQ-WELDER-2505-012#assets",
     "스티커크기": "80x50",
     "스티커재질": "파괴 라벨",
     "인쇄수량": "1",
@@ -294,8 +295,11 @@ function normalizeRow(row) {
   if (!normalized["스티커크기"]) normalized["스티커크기"] = defaultLabelSize(normalized["자산구분코드"]);
   if (!normalized["스티커재질"]) normalized["스티커재질"] = defaultLabelMaterial(normalized["자산구분코드"]);
   if (!normalized["사용이력"]) normalized["사용이력"] = "[]";
-  if (!normalized["QR코드URL"] && normalized["자산번호(최종)"]) {
-    normalized["QR코드URL"] = shortQrUrl(normalized["자산번호(최종)"]);
+  if (
+    normalized["자산번호(최종)"] &&
+    (!normalized["QR코드URL"] || isLegacyQrUrl(normalized["QR코드URL"]))
+  ) {
+    normalized["QR코드URL"] = assetQrUrl(normalized["자산번호(최종)"]);
   }
   return normalized;
 }
@@ -472,7 +476,7 @@ function renderDetail() {
     ["구매일", row["구매일"] || "-"],
     ["구매금액", row["구매금액"] || "-"],
     ["스티커재질", row["스티커재질"] || defaultLabelMaterial(row["자산구분코드"])],
-    ["QR 보안", "단축 URL / 사내 SSO 인가"],
+    ["QR 보안", "배포 URL / 사내 SSO 인가 예정"],
     ["최근상태변경일", row["최근상태변경일"] || "-"],
     ["최종실사일", row["최종실사일"] || "-"],
     ["비고", row["비고"] || "-"],
@@ -482,7 +486,7 @@ function renderDetail() {
     .map(([label, value]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd>`)
     .join("");
 
-  const qrUrl = row["QR코드URL"] || shortQrUrl(row["자산번호(최종)"]);
+  const qrUrl = qrValueForRow(row);
   els.qrImage.src = qrImageUrl(qrUrl);
   els.qrLink.href = qrUrl;
   els.qrLink.textContent = qrUrl;
@@ -548,7 +552,7 @@ function writeUsageHistory(row, history) {
 function renderLabels(rows) {
   els.labelGrid.innerHTML = rows
     .map((row) => {
-      const qrUrl = row["QR코드URL"] || shortQrUrl(row["자산번호(최종)"]);
+      const qrUrl = qrValueForRow(row);
       return `
         <article class="asset-label">
           <img alt="" src="${escapeAttribute(qrImageUrl(qrUrl))}" />
@@ -695,7 +699,7 @@ function stickerCsvFromRows(rows) {
       row["자산구분코드"],
       row["품목코드"],
       row["도입연월"],
-      row["QR코드URL"] || shortQrUrl(row["자산번호(최종)"]),
+      qrValueForRow(row),
       row["스티커크기"] || defaultLabelSize(row["자산구분코드"]),
       row["스티커재질"] || defaultLabelMaterial(row["자산구분코드"]),
       "SSO required",
@@ -713,14 +717,28 @@ function defaultLabelMaterial(categoryCode) {
   return LABEL_MATERIAL_BY_CATEGORY[categoryCode] || "무광 PET";
 }
 
-function shortQrUrl(assetNo) {
-  const sequence = deriveSequence(assetNo);
-  if (sequence) return `https://cmp.ny/A${sequence}`;
-  let hash = 0;
-  for (const char of String(assetNo || "")) {
-    hash = (hash * 31 + char.charCodeAt(0)) % 46656;
+function qrValueForRow(row) {
+  const existing = normalizeCell(row["QR코드URL"]);
+  if (existing && !isLegacyQrUrl(existing)) return existing;
+  return assetQrUrl(row["자산번호(최종)"]);
+}
+
+function assetQrUrl(assetNo) {
+  const url = new URL(appBaseUrl());
+  url.searchParams.set("asset", assetNo);
+  url.hash = "assets";
+  return url.toString();
+}
+
+function appBaseUrl() {
+  if (typeof window !== "undefined" && /^https?:$/.test(window.location.protocol)) {
+    return `${window.location.origin}${window.location.pathname || "/"}`;
   }
-  return `https://cmp.ny/${hash.toString(36).toUpperCase().padStart(3, "0")}`;
+  return PUBLIC_APP_URL;
+}
+
+function isLegacyQrUrl(value) {
+  return /^https?:\/\/cmp\.ny\//i.test(normalizeCell(value));
 }
 
 function csvEscape(value) {
@@ -923,7 +941,7 @@ async function addAsset(form) {
   if (!row["스티커크기"]) row["스티커크기"] = defaultLabelSize(row["자산구분코드"]);
   if (!row["스티커재질"]) row["스티커재질"] = defaultLabelMaterial(row["자산구분코드"]);
   if (!row["인쇄수량"]) row["인쇄수량"] = "1";
-  if (!row["QR코드URL"]) row["QR코드URL"] = shortQrUrl(row["자산번호(최종)"]);
+  if (!row["QR코드URL"]) row["QR코드URL"] = assetQrUrl(row["자산번호(최종)"]);
   const normalized = normalizeRow(row);
   state.rows = [normalized, ...state.rows.filter((item) => item["자산번호(최종)"] !== normalized["자산번호(최종)"])];
   state.selectedAssetNo = normalized["자산번호(최종)"];
@@ -976,6 +994,26 @@ function escapeHtml(value) {
 
 function escapeAttribute(value) {
   return escapeHtml(value).replace(/`/g, "&#096;");
+}
+
+function selectAssetFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const assetNo = normalizeCell(params.get("asset"));
+  if (!assetNo) return;
+
+  const exists = state.rows.some((row) => row["자산번호(최종)"] === assetNo);
+  if (exists) {
+    state.selectedAssetNo = assetNo;
+    state.filters.query = "";
+    state.filters.status = "전체";
+    state.filters.department = "전체";
+    state.filters.category = "전체";
+    return;
+  }
+
+  window.setTimeout(() => {
+    els.syncStatus.textContent = `${assetNo} 비품을 현재 데이터에서 찾지 못했습니다. Google Sheet 또는 CSV 데이터를 확인해 주세요.`;
+  }, 0);
 }
 
 els.searchInput.addEventListener("input", (event) => {
@@ -1100,4 +1138,5 @@ if (!state.selectedAssetNo && state.rows[0]) {
   state.selectedAssetNo = state.rows[0]["자산번호(최종)"];
 }
 
+selectAssetFromUrl();
 render();
